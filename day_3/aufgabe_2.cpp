@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <math.h>
 using namespace std;
 
 /**
@@ -27,6 +28,17 @@ int findMostCommonOnBit(vector<vector<int>> entries, int position){
         return sum_zero > sum_one ? 0: 1;
 }
 
+int binaryToDecimal(vector<int> binary){
+    int sum = 0;
+    int potenz = 0;
+    for (int i = binary.size()-1; i >= 0; i--)
+    {
+        sum += binary[i] * pow(2, potenz);
+        potenz++;
+    }
+    return sum;
+}
+
 void print2Dvector(vector<vector<int>> input){
     for(vector<int> entry : input){
         for( int bit : entry)
@@ -35,13 +47,27 @@ void print2Dvector(vector<vector<int>> input){
     }
 }
 
+vector<vector<int>> filterList(vector<vector<int>> input, int bit, bool most_common){
+    if(input.size() == 1){
+        return input;
+    }
+    // check the input for most common
+    vector<vector<int>> matchingNumbers;
+    int current_common = findMostCommonOnBit(input, bit);
+    for(vector<int> number: input){
+        if( most_common && number[bit] == current_common) matchingNumbers.push_back(number);
+        else if( !most_common && number[bit] != current_common) matchingNumbers.push_back(number);
+    }
+    return filterList(matchingNumbers, ++bit, most_common);
+}
+
 int main(int argc, char const *argv[])
 {
-    //read input
-    ifstream file ("input.txt");
+    ifstream file ("input_2.txt");
     vector<vector<int>> entries;
     string input;
 
+    //read input
     while(file >> input){
         // creates a vector that automatically? created a vector an fills it with the chars from the starting pointer of the string
         vector<char> charEntry ( input.begin(), input.end());
@@ -51,41 +77,15 @@ int main(int argc, char const *argv[])
         entries.push_back(entry);
     }
 
-    const int bitLenght = entries[0].size();
+    //calculate the oxygen generator rating
 
-    //calculate the oxygen generator rating 
-    vector<vector<int>> matchingNumbers;
-    //deep copy the entries vector
-    for (vector<int> number : entries){
-        vector<int> newEntry;
-        for (char bit: number)
-            newEntry.push_back(bit);
-        matchingNumbers.push_back(newEntry);
-    }
-    
-    for (int i = 0; i < 1; i++)
-    {
-        // get the most common for the current bit;
-        int current_common = findMostCommonOnBit(matchingNumbers, i);
-        // loop through all numbers and remove the numbers that dont match the bit
-        cout << "current_common " << current_common << endl;
-        int count =0;
-        int size=matchingNumbers.size();
-        for(int j = 0; j < size; j++){
-            cout << "current first: " << matchingNumbers[j][i] << endl;
-            if(matchingNumbers[j][i] != current_common){
-                for(int bit : matchingNumbers[j])
-                    cout << bit;
-                cout << endl;
-                matchingNumbers.erase(matchingNumbers.begin()+j);
-            }
-            count++;
-        }
-        cout << count;
-        //print2Dvector(matchingNumbers);
-    }
-
-    //calculate the CO2 scrubber rating.
-    /* code */
+    vector<int> binary_oxygen = filterList(entries, 0, true)[0];
+    vector<int> binary_co2 = filterList(entries, 0, false)[0];
+    int oxygen = binaryToDecimal(binary_oxygen);
+    int co2 = binaryToDecimal(binary_co2);
+    cout << oxygen*co2;
+    // int co2 =  binaryToDecimal(binary_co2);
+    // cout << "oxygen: " <<  oxygen << "+ co2: " << co2;
+    // cout << "result: " << oxygen+co2;
     return 0;
 }
