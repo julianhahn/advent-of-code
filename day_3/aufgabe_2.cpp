@@ -28,6 +28,7 @@ int findMostCommonOnBit(vector<vector<int>> entries, int position){
         return sum_zero > sum_one ? 0: 1;
 }
 
+// 1*2^0 + 0*2^1 + 1*2^2
 int binaryToDecimal(vector<int> binary){
     int sum = 0;
     int potenz = 0;
@@ -48,6 +49,7 @@ void print2Dvector(vector<vector<int>> input){
 }
 
 vector<vector<int>> filterList(vector<vector<int>> input, int bit, bool most_common){
+    //if only one is left, the result is found
     if(input.size() == 1){
         return input;
     }
@@ -78,14 +80,10 @@ int main(int argc, char const *argv[])
     }
 
     //calculate the oxygen generator rating
-
     vector<int> binary_oxygen = filterList(entries, 0, true)[0];
     vector<int> binary_co2 = filterList(entries, 0, false)[0];
     int oxygen = binaryToDecimal(binary_oxygen);
     int co2 = binaryToDecimal(binary_co2);
     cout << oxygen*co2;
-    // int co2 =  binaryToDecimal(binary_co2);
-    // cout << "oxygen: " <<  oxygen << "+ co2: " << co2;
-    // cout << "result: " << oxygen+co2;
     return 0;
 }
